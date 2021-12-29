@@ -1,0 +1,146 @@
+//const runtimeCaching = require('next-pwa/cache')
+const runtimeCaching = require('./next-pwa-cache.config');
+const withPWA = require('next-pwa')({
+  pwa: {
+    dest: 'public',
+    runtimeCaching,
+
+    //mode: 'production', // only works after "Clear site data"! Force next-pwa to generate worker box production build (https://github.com/shadowwalker/next-pwa#tips)
+  }
+})
+
+
+const withTM = require('next-transpile-modules')([
+  //'@react-three/drei',
+  'three'
+], {
+  debug: true,
+  //resolveSymlinks: false
+})
+//module.exports = withTM()
+
+
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+	enabled: process.env.ANALYZE === 'true',
+})
+
+const withPlugins = require('next-compose-plugins');
+module.exports = withPlugins([
+  //withPWA,
+  withBundleAnalyzer,
+  withTM, // wants to be the last plugin in this list
+], {
+  poweredByHeader: false,
+  reactStrictMode: true,
+
+  //to ignore TS errors during build (for now)
+  typescript: { ignoreBuildErrors: true },
+  images: {
+    domains: [
+    	'images.unsplash.com',
+    	'github.com',
+	],
+  },
+
+  // forces webpack5 (Next.js < 11)
+  //future: {
+  //  webpack5: true,
+  //},
+
+  // Next.js >= 11 - Webpack 5 is enabled by default
+  //webpack5: false,
+
+  /* defaults you might want to overwrite
+  reactStrictMode: false, // in dev mode only - https://nextjs.org/docs/api-reference/next.config.js/react-strict-mod
+  poweredByHeader: true, // false => to disable the x-powered-by
+  generateEtags: true, // false => to disable ETag generation
+  images: {
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  */
+
+
+  i18n: {
+    locales: [
+        'de',
+        'en',
+    ],
+    defaultLocale: 'en',
+    //localeDetection: false
+  },
+
+
+  // TODO: check if this disables/forces anything optimization wise
+  async headers() {
+    return [
+      {
+        //source: '/(.*)',
+        source: '/((?!api$|api/).*)',
+        headers: [
+          {
+            key: 'X-Clacks-Overhead',
+            value: 'GNU Terry Pratchett',
+          },
+        ],
+      },
+    ]
+  },
+
+
+  /* add some Node.js redirects if required (https://nextjs.org/docs/api-reference/next.config.js/redirects)
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+
+      {
+        source: '/team',
+        destination: '/about',
+        permanent: false,
+      },
+
+      // Path Matching - will match `/old-blog/a`, but not `/old-blog/a/b`
+      {
+        source: '/old-blog/:slug',
+        destination: '/news/:slug',
+        permanent: false,
+      },
+
+      // Wildcard Path Matching - will match `/blog/a` and `/blog/a/b`
+      {
+        source: '/blog/:slug*',
+        destination: '/news/:slug*',
+        permanent: false,
+      },
+
+      // Regex Path Matching - The regex below will match `/post/123` but not `/post/abc`
+      {
+        source: '/post/:slug(\\d{1,})',
+        destination: '/news/:slug',
+        permanent: false,
+      },
+
+
+      {
+        // does not handle locales automatically since locale: false is set
+        source: '/nl/with-locale-manual',
+        destination: '/nl/another',
+        locale: false,
+        permanent: false,
+      },
+      {
+        // this matches '/' since `en` is the defaultLocale
+        source: '/en',
+        destination: '/en/another',
+        locale: false,
+        permanent: false,
+    ]
+  },
+  */
+
+})

@@ -1,0 +1,22 @@
+//import styles from 'src/styles/pages/{{kebabCase name}}.module.scss'
+import styles from '../../../src/styles/pages/{{kebabCase name}}.module.scss'
+
+const {{pascalCase name}} = ({ post, redirect, preview }) => {
+	return (
+		<>
+			<NextSeo
+				title="{{name}}"
+				description="{{desc}}"
+			/>
+
+			<div className={styles.container}>
+				<h1>{{name}} - TODO: pageDynamic</h1>
+				{{#if desc}}
+				<div>{{desc}}</div>
+				{{/if}}
+			</div>
+		</>
+	)
+})
+
+export default {{pascalCase name}}
